@@ -7,15 +7,15 @@ export default function Friend({ friend, setActive }) {
       <h3>{friend.name}</h3>
       <p
         className={`
-        ${friend.balance < 0 && "green"}
-        ${friend.balance > 0 && "red"}
+        ${friend.balance < 0 && styles.green}
+        ${friend.balance > 0 && styles.red}
         `}
       >
         {friend.balance === 0
           ? `You and ${friend.name} are even.`
           : friend.balance < 0
-          ? `${friend.name} owes you ${friend.balance} EGP.`
-          : `You owe ${friend.name} ${friend.balance} EGP`}
+          ? `${friend.name} owes you $${friend.balance}.`
+          : `You owe ${friend.name} $${friend.balance}`}
       </p>
       <Button onClick={setActive}>
         {friend.isActive ? "Close" : "Select"}

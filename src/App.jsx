@@ -1,10 +1,14 @@
-import { useReducer } from "react";
+import { useEffect, useReducer } from "react";
 import Sidebar from "./components/Sidebar/Sidebar";
 import Friend from "./components/Sidebar/Friend";
 import SplitBillForm from "./components/SplitBillForm/SplitBillForm";
 
 function reducer(state, action) {
   switch (action.type) {
+    case "initState":
+      return JSON.parse(localStorage.getItem("friends") ?? "[]").map(
+        (friend) => ({ ...friend, isActive: false })
+      );
     case "add": {
       const matching = state.filter(
         (friend) =>
@@ -14,10 +18,14 @@ function reducer(state, action) {
         window.alert(`${action.payload.name} is already added.`);
         return state;
       }
+      localStorage.setItem(
+        "friends",
+        JSON.stringify([...state, action.payload])
+      );
       return [...state, action.payload];
     }
-    case "updateBalance":
-      return state.map((friend) =>
+    case "updateBalance": {
+      const newState = state.map((friend) =>
         friend.id !== action.payload.id
           ? friend
           : {
@@ -27,6 +35,10 @@ function reducer(state, action) {
               isActive: false,
             }
       );
+      localStorage.setItem("friends", JSON.stringify(newState));
+      return newState;
+    }
+
     case "setActive":
       return state.map((friend) =>
         friend.id !== action.payload
@@ -44,6 +56,11 @@ function reducer(state, action) {
 export default function App() {
   const [state, dispatch] = useReducer(reducer, []);
   const activeFriends = state.filter((friend) => friend.isActive);
+
+  useEffect(() => {
+    dispatch({ type: "initState" });
+  }, []);
+
   return (
     <div className="app">
       <Sidebar
